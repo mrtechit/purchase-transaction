@@ -14,7 +14,7 @@ func NewDB(Db *gorm.DB) *DB {
 }
 
 func (db *DB) StoreTrx(trx *model.StoreTransaction) error {
-	result := db.Db.Create(nil)
+	result := db.Db.Create(&trx)
 	if result.Error != nil {
 		return result.Error
 	}

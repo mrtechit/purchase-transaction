@@ -1,7 +1,8 @@
 package model
 
 type StoreTransaction struct {
-	Description     string `gorm:"primaryKey"`
+	TransactionID   string `gorm:"primaryKey"`
+	Description     string
 	TransactionDate string
 	USDollarAmount  string
 }
