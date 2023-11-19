@@ -1,10 +1,12 @@
 package main
 
 import (
+	"github.com/mrtechit/purchase-transaction/httpserver"
 	"github.com/mrtechit/purchase-transaction/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
+	"net/http"
 )
 
 func main() {
@@ -12,6 +14,12 @@ func main() {
 	_, err := migrateAndConnectToPsg()
 	if err != nil {
 		log.Fatal("[main] error init database")
+	}
+
+	httpserver.Handler()
+	err = http.ListenAndServe(":8080", nil)
+	if err != nil {
+		log.Fatal("[main] error init http server")
 	}
 }
 
