@@ -114,7 +114,7 @@ func (apiHandler *ApiHandler) handleRetrieveTrx(w http.ResponseWriter, transacti
 		http.Error(w, "Error fetching trx", http.StatusInternalServerError)
 		return
 	}
-	exchangeRate, err := currency.GetExchangeRate(country)
+	exchangeRate, err := currency.GetExchangeRate(country, trx.TransactionDate)
 	if err != nil {
 		http.Error(w, "Error fetching exchangeRate", http.StatusInternalServerError)
 		return

@@ -27,14 +27,18 @@ type ExchangeRateResponse struct {
 }
 
 // GetExchangeRate gets the exchange rate from API using default paginated parameters of 1,100
-func GetExchangeRate(country string) (string, error) {
-	currentTime := time.Now()
-	sixMonthsAgo := currentTime.AddDate(0, -6, 0)
+func GetExchangeRate(country, date string) (string, error) {
+
 	dateFormat := "2006-01-02" // YYYY-MM-DD
+	parsedTime, err := time.Parse(dateFormat, date)
+	if err != nil {
+		fmt.Println("Error parsing date:", err)
+		return "", err
+	}
+	sixMonthsAgo := parsedTime.AddDate(0, -6, 0)
 	formattedDate := sixMonthsAgo.Format(dateFormat)
 
 	TreasuryUrl := TreasuryUrl + formattedDate + countryEq + country + sortByDate
-
 	response, err := http.Get(TreasuryUrl)
 	if err != nil {
 		fmt.Println("Error making GET request:", err)
