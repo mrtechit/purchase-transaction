@@ -26,3 +26,4 @@ There are 2 API's :
 2. Retrieve transaction
    `curl --location 'http://127.0.0.1:8080/v1/api/transaction?transaction_id=fd23d3b9-216f-4f2a-ab46-6e4192459721&country=Zimbabwe'`
 
+Postman Collection can be found at root of project

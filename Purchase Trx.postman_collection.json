@@ -1,0 +1,77 @@
+{
+	"info": {
+		"_postman_id": "f142f275-47ae-48c2-93de-417274f981f3",
+		"name": "Purchase Trx",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20858855"
+	},
+	"item": [
+		{
+			"name": "Retrieve",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080/v1/api/transaction?transaction_id=1c9cb9ea-4eff-450d-aadd-e725804e9a14&country=Zimbabwe",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"api",
+						"transaction"
+					],
+					"query": [
+						{
+							"key": "transaction_id",
+							"value": "1c9cb9ea-4eff-450d-aadd-e725804e9a14"
+						},
+						{
+							"key": "country",
+							"value": "Zimbabwe"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Store",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"description\": \"transaction 4322\",\n    \"transaction_date\": \"2023-10-12\",\n    \"us_dollar_amount\": \"1.86\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/v1/api/transaction",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"api",
+						"transaction"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
