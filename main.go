@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/mrtechit/purchase-transaction/db"
 	"github.com/mrtechit/purchase-transaction/httpserver"
 	"github.com/mrtechit/purchase-transaction/model"
 	"gorm.io/driver/postgres"
@@ -11,12 +12,15 @@ import (
 
 func main() {
 
-	_, err := migrateAndConnectToPsg()
+	gormDb, err := migrateAndConnectToPsg()
 	if err != nil {
 		log.Fatal("[main] error init database")
 	}
+	dbManager := db.NewDB(gormDb)
 
-	httpserver.Handler()
+	handler := httpserver.NewApiHandler(dbManager)
+	handler.Handler()
+
 	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal("[main] error init http server")
