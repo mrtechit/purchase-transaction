@@ -37,7 +37,19 @@ func main() {
 }
 
 func conntectToPsg() (*gorm.DB, error) {
-	dsn := os.Getenv("POSTGRES_DSN")
+
+	host := os.Getenv("POSTGRES_HOST")
+	port := os.Getenv("POSTGRES_PORT")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbname := os.Getenv("POSTGRES_DB")
+
+	if host == "" || port == "" || user == "" || password == "" || dbname == "" {
+		log.Fatal("Error loading env")
+	}
+
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
