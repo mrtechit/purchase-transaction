@@ -1,8 +1,10 @@
 package main
 
 import (
+	"github.com/mrtechit/purchase-transaction/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 )
 
 func main() {
@@ -16,4 +18,20 @@ func connectToPostgreSQL() (*gorm.DB, error) {
 		return nil, err
 	}
 	return db, nil
+}
+
+func migrateDB() *gorm.DB {
+
+	db, err := connectToPostgreSQL()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Perform database migration
+	err = db.AutoMigrate(&model.StoreTransaction{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return db
 }
