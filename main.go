@@ -9,9 +9,13 @@ import (
 
 func main() {
 
+	_, err := migrateAndConnectToPsg()
+	if err != nil {
+		log.Fatal("[main] error init database")
+	}
 }
 
-func connectToPostgreSQL() (*gorm.DB, error) {
+func conntectToPsg() (*gorm.DB, error) {
 	dsn := "user=postgres password=postgres dbname=postgres host=localhost port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -20,18 +24,18 @@ func connectToPostgreSQL() (*gorm.DB, error) {
 	return db, nil
 }
 
-func migrateDB() *gorm.DB {
+func migrateAndConnectToPsg() (*gorm.DB, error) {
 
-	db, err := connectToPostgreSQL()
+	db, err := conntectToPsg()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	// Perform database migration
 	err = db.AutoMigrate(&model.StoreTransaction{})
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return db
+	return db, nil
 }
