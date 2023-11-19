@@ -5,6 +5,10 @@ import (
 	"net/http"
 )
 
+const (
+	apiPath = "/v1/api/transaction"
+)
+
 type ApiHandler struct {
 	Db TransactionManager
 }
@@ -15,17 +19,27 @@ func NewApiHandler(transactionManager TransactionManager) *ApiHandler {
 
 type TransactionManager interface {
 	StoreTrx(trx *model.StoreTransaction) error
-	RetrieveTrx(trx *model.StoreTransaction, transactionID string) (*model.StoreTransaction, error)
+	RetrieveTrx(transactionID string) (*model.StoreTransaction, error)
 }
 
 func (apiHandler *ApiHandler) Handler() {
 
-	http.HandleFunc("/api/hello", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(apiPath, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
-			apiHandler.Db.StoreTrx(nil)
+			handleStoreTrx()
+		} else if r.Method == http.MethodGet {
+			handleRetrieveTrx()
 		} else {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
+
+}
+
+func handleStoreTrx() {
+
+}
+
+func handleRetrieveTrx() {
 
 }
