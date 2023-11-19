@@ -1,6 +1,8 @@
 package httpserver
 
 import (
+	"encoding/json"
+	"github.com/google/uuid"
 	"github.com/mrtechit/purchase-transaction/model"
 	"net/http"
 )
@@ -50,9 +52,18 @@ func (apiHandler *ApiHandler) Handler() {
 
 	http.HandleFunc(apiPath, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
-			handleStoreTrx()
+
+			var storeTransactionRequest StoreTransactionRequest
+			decoder := json.NewDecoder(r.Body)
+			err := decoder.Decode(&storeTransactionRequest)
+			if err != nil {
+				http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+				return
+			}
+
+			apiHandler.handleStoreTrx(w, storeTransactionRequest)
 		} else if r.Method == http.MethodGet {
-			handleRetrieveTrx()
+			handleRetrieveTrx(w)
 		} else {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -60,10 +71,34 @@ func (apiHandler *ApiHandler) Handler() {
 
 }
 
-func handleStoreTrx() {
+// handleStoreTrx http handler for POST request which stores the trx
+func (apiHandler *ApiHandler) handleStoreTrx(w http.ResponseWriter, storeTransactionRequest StoreTransactionRequest) {
+
+	transactionID := uuid.New().String()
+
+	storeTrx := &model.StoreTransaction{
+		TransactionID:   transactionID,
+		Description:     storeTransactionRequest.Description,
+		TransactionDate: storeTransactionRequest.TransactionDate,
+		USDollarAmount:  storeTransactionRequest.USDollarAmount,
+	}
+
+	err := apiHandler.Db.StoreTrx(storeTrx)
+	response := StoreTransactionResponse{TransactionID: transactionID}
+
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.Write(jsonResponse)
 
 }
 
-func handleRetrieveTrx() {
+// handleRetrieveTrx http handler of GET request which retrieves trx
+func handleRetrieveTrx(w http.ResponseWriter) {
 
 }
