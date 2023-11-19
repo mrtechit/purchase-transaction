@@ -1,5 +1,6 @@
 # purchase-transaction
 Repository for purchase transaction
+This project uses [decimal](github.com/shopspring/decimal) for doing monetary calculation with precision.
 
 ## How to run (Docker)
 1. Clone the repository
