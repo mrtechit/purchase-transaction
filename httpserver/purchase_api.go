@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/mrtechit/purchase-transaction/currency"
 	"github.com/mrtechit/purchase-transaction/model"
@@ -55,6 +56,7 @@ func (apiHandler *ApiHandler) Handler() {
 				http.Error(w, "Error decoding JSON", http.StatusBadRequest)
 				return
 			}
+			fmt.Println("Store request received", storeTransactionRequest)
 			apiHandler.handleStoreTrx(w, storeTransactionRequest)
 		} else if r.Method == http.MethodGet {
 
@@ -65,7 +67,7 @@ func (apiHandler *ApiHandler) Handler() {
 				http.Error(w, "Missing request params", http.StatusBadRequest)
 				return
 			}
-
+			fmt.Println("Retrieve request received for transactionID : ", transactionID)
 			apiHandler.handleRetrieveTrx(w, transactionID, country)
 		} else {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

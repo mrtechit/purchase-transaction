@@ -1,6 +1,11 @@
 # purchase-transaction
 Repository for purchase transaction
 
+## How to run (Docker)
+1. Clone the repository
+2. Update .env file for db credentials (default one's can also be used)
+3. Run `docker-compose up -d --build` in the root folder
+
 ## How to run (Without Docker)
 1. Clone the repository
 2. Run postgresSQL locally
@@ -12,9 +17,9 @@ Repository for purchase transaction
 There are 2 API's :
 1. Store transaction
    `curl --location 'http://127.0.0.1:8080/v1/api/transaction' \
-   --header 'Content-Type: text/plain' \
+   --header 'Content-Type: application/json' \
    --data '{
-   "description" : "transaction 3",
+   "description" : "transaction 4322",
    "transaction_date" : "2023-10-12",
    "us_dollar_amount" : "1.86"
    }'`
