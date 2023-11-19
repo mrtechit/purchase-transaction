@@ -52,7 +52,6 @@ func (apiHandler *ApiHandler) Handler() {
 
 	http.HandleFunc(apiPath, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
-
 			var storeTransactionRequest StoreTransactionRequest
 			decoder := json.NewDecoder(r.Body)
 			err := decoder.Decode(&storeTransactionRequest)
@@ -60,10 +59,16 @@ func (apiHandler *ApiHandler) Handler() {
 				http.Error(w, "Error decoding JSON", http.StatusBadRequest)
 				return
 			}
-
 			apiHandler.handleStoreTrx(w, storeTransactionRequest)
 		} else if r.Method == http.MethodGet {
-			handleRetrieveTrx(w)
+			var retrieveTransactionRequest RetrieveTransactionRequest
+			decoder := json.NewDecoder(r.Body)
+			err := decoder.Decode(&retrieveTransactionRequest)
+			if err != nil {
+				http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+				return
+			}
+			apiHandler.handleRetrieveTrx(w, retrieveTransactionRequest)
 		} else {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -99,6 +104,29 @@ func (apiHandler *ApiHandler) handleStoreTrx(w http.ResponseWriter, storeTransac
 }
 
 // handleRetrieveTrx http handler of GET request which retrieves trx
-func handleRetrieveTrx(w http.ResponseWriter) {
+func (apiHandler *ApiHandler) handleRetrieveTrx(w http.ResponseWriter, retrieveTransactionRequest RetrieveTransactionRequest) {
 
+	_, err := apiHandler.Db.RetrieveTrx(retrieveTransactionRequest.TransactionID)
+	if err != nil {
+		http.Error(w, "Error fetching trx", http.StatusInternalServerError)
+		return
+	}
+	response := RetrieveTransactionResponse{
+		TransactionID:   "",
+		Description:     "",
+		TransactionDate: "",
+		USDollarAmount:  "",
+		ExchangeRate:    "",
+		ConvertedAmount: "",
+	}
+
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.Write(jsonResponse)
 }
