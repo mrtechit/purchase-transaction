@@ -12,11 +12,6 @@ const (
 	apiPath = "/v1/api/transaction"
 )
 
-type RetrieveTransactionRequest struct {
-	TransactionID string `json:"transaction_id"`
-	Country       string `json:"country"`
-}
-
 type RetrieveTransactionResponse struct {
 	TransactionID   string `json:"transaction_id"`
 	Description     string `json:"description"`
@@ -99,11 +94,8 @@ func (apiHandler *ApiHandler) handleStoreTrx(w http.ResponseWriter, storeTransac
 		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json")
-
 	w.Write(jsonResponse)
-
 }
 
 // handleRetrieveTrx http handler of GET request which retrieves trx
@@ -111,7 +103,7 @@ func (apiHandler *ApiHandler) handleRetrieveTrx(w http.ResponseWriter, transacti
 
 	trx, err := apiHandler.Db.RetrieveTrx(transactionID)
 	if err != nil {
-		http.Error(w, "Error fetching trx", http.StatusInternalServerError)
+		http.Error(w, "Error fetching trx", http.StatusNotFound)
 		return
 	}
 	exchangeRate, err := currency.GetExchangeRate(country, trx.TransactionDate)
