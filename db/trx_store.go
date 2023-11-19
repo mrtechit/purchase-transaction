@@ -20,3 +20,13 @@ func (db *DB) StoreTrx(trx *model.StoreTransaction) error {
 	}
 	return nil
 }
+
+func (db *DB) RetrieveTrx(transactionID string) (*model.StoreTransaction, error) {
+	var storeTransaction model.StoreTransaction
+	storeTransaction.TransactionID = transactionID
+	result := db.Db.Find(&storeTransaction)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &storeTransaction, nil
+}

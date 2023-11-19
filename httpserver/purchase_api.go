@@ -15,6 +15,7 @@ func NewApiHandler(transactionManager TransactionManager) *ApiHandler {
 
 type TransactionManager interface {
 	StoreTrx(trx *model.StoreTransaction) error
+	RetrieveTrx(trx *model.StoreTransaction, transactionID string) (*model.StoreTransaction, error)
 }
 
 func (apiHandler *ApiHandler) Handler() {

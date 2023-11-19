@@ -13,17 +13,41 @@ func TestStoreTrx(t *testing.T) {
 	if err != nil {
 		t.Errorf("error connecting to DB")
 	}
-	defer teardown()
-
-	newDB := NewDB(db)
 	trx := &model.StoreTransaction{
 		TransactionID:   "7804a376-3688-4187-a7ba-992893cd4cee",
 		Description:     "test",
 		TransactionDate: "10-11-2022",
 		USDollarAmount:  "1.54",
 	}
+	defer teardown(db, *trx)
+
+	newDB := NewDB(db)
+
 	err = newDB.StoreTrx(trx)
 	require.NoError(t, err)
+}
+
+func TestRetrieveTrx(t *testing.T) {
+	db, err := setup()
+	if err != nil {
+		t.Errorf("error connecting to DB")
+	}
+	trxStruct := &model.StoreTransaction{
+		TransactionID:   "7804a376-3688-4187-a7ba-992893cd4cdf",
+		Description:     "test",
+		TransactionDate: "10-11-2022",
+		USDollarAmount:  "1.54",
+	}
+	defer teardown(db, *trxStruct)
+	newDB := NewDB(db)
+	err = newDB.StoreTrx(trxStruct)
+	if err != nil {
+		t.Errorf("duplicate record")
+	}
+
+	trx, err := newDB.RetrieveTrx(trxStruct.TransactionID)
+	require.NoError(t, err)
+	require.Equal(t, "1.54", trx.USDollarAmount)
 }
 
 func setup() (*gorm.DB, error) {
@@ -34,8 +58,8 @@ func setup() (*gorm.DB, error) {
 	return db, nil
 }
 
-func teardown() {
-
+func teardown(db *gorm.DB, transaction model.StoreTransaction) {
+	db.Delete(&transaction)
 }
 
 func conntectToPsgTestDB() (*gorm.DB, error) {
