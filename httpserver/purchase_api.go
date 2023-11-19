@@ -3,6 +3,7 @@ package httpserver
 import (
 	"encoding/json"
 	"github.com/google/uuid"
+	"github.com/mrtechit/purchase-transaction/currency"
 	"github.com/mrtechit/purchase-transaction/model"
 	"net/http"
 )
@@ -13,7 +14,7 @@ const (
 
 type RetrieveTransactionRequest struct {
 	TransactionID string `json:"transaction_id"`
-	Currency      string `json:"currency"`
+	Country       string `json:"country"`
 }
 
 type RetrieveTransactionResponse struct {
@@ -61,14 +62,16 @@ func (apiHandler *ApiHandler) Handler() {
 			}
 			apiHandler.handleStoreTrx(w, storeTransactionRequest)
 		} else if r.Method == http.MethodGet {
-			var retrieveTransactionRequest RetrieveTransactionRequest
-			decoder := json.NewDecoder(r.Body)
-			err := decoder.Decode(&retrieveTransactionRequest)
-			if err != nil {
-				http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+
+			transactionID := r.URL.Query().Get("transaction_id")
+			country := r.URL.Query().Get("country")
+
+			if transactionID == "" || country == "" {
+				http.Error(w, "Missing request params", http.StatusBadRequest)
 				return
 			}
-			apiHandler.handleRetrieveTrx(w, retrieveTransactionRequest)
+
+			apiHandler.handleRetrieveTrx(w, transactionID, country)
 		} else {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -104,20 +107,30 @@ func (apiHandler *ApiHandler) handleStoreTrx(w http.ResponseWriter, storeTransac
 }
 
 // handleRetrieveTrx http handler of GET request which retrieves trx
-func (apiHandler *ApiHandler) handleRetrieveTrx(w http.ResponseWriter, retrieveTransactionRequest RetrieveTransactionRequest) {
+func (apiHandler *ApiHandler) handleRetrieveTrx(w http.ResponseWriter, transactionID, country string) {
 
-	_, err := apiHandler.Db.RetrieveTrx(retrieveTransactionRequest.TransactionID)
+	trx, err := apiHandler.Db.RetrieveTrx(transactionID)
 	if err != nil {
 		http.Error(w, "Error fetching trx", http.StatusInternalServerError)
 		return
 	}
+	exchangeRate, err := currency.GetExchangeRate(country)
+	if err != nil {
+		http.Error(w, "Error fetching exchangeRate", http.StatusInternalServerError)
+		return
+	}
+	convertedAmount, err := currency.ConvertToUsDollarAndRoundOff(trx.USDollarAmount, exchangeRate)
+	if err != nil {
+		http.Error(w, "Error converting currency", http.StatusInternalServerError)
+		return
+	}
 	response := RetrieveTransactionResponse{
-		TransactionID:   "",
-		Description:     "",
-		TransactionDate: "",
-		USDollarAmount:  "",
-		ExchangeRate:    "",
-		ConvertedAmount: "",
+		TransactionID:   trx.TransactionID,
+		Description:     trx.Description,
+		TransactionDate: trx.TransactionDate,
+		USDollarAmount:  trx.USDollarAmount,
+		ExchangeRate:    exchangeRate,
+		ConvertedAmount: convertedAmount,
 	}
 
 	jsonResponse, err := json.Marshal(response)

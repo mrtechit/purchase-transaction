@@ -26,8 +26,8 @@ type ExchangeRateResponse struct {
 	} `json:"meta"`
 }
 
-// getExchangeRate gets the exchange rate from API using default paginated parameters of 1,100
-func getExchangeRate(country string) (string, error) {
+// GetExchangeRate gets the exchange rate from API using default paginated parameters of 1,100
+func GetExchangeRate(country string) (string, error) {
 	currentTime := time.Now()
 	sixMonthsAgo := currentTime.AddDate(0, -6, 0)
 	dateFormat := "2006-01-02" // YYYY-MM-DD
@@ -66,7 +66,7 @@ func getExchangeRate(country string) (string, error) {
 	return exchangeRateResponse.Data[0].ExchangeRate, nil
 }
 
-func convertToUsDollarAndRoundOff(amount, exchangeRate string) (string, error) {
+func ConvertToUsDollarAndRoundOff(amount, exchangeRate string) (string, error) {
 	amountPrecise, err := decimal.NewFromString(amount)
 	if err != nil {
 		return "", err
