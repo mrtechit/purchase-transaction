@@ -6,7 +6,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/mrtechit/purchase-transaction/currency"
 	"github.com/mrtechit/purchase-transaction/model"
+	"github.com/shopspring/decimal"
 	"net/http"
+	"time"
 )
 
 const (
@@ -57,6 +59,10 @@ func (apiHandler *ApiHandler) Handler() {
 				return
 			}
 			fmt.Println("Store request received", storeTransactionRequest)
+			if !validateStoreTransactionRequest(storeTransactionRequest) {
+				http.Error(w, "Invalid request", http.StatusBadRequest)
+				return
+			}
 			apiHandler.handleStoreTrx(w, storeTransactionRequest)
 		} else if r.Method == http.MethodGet {
 
@@ -136,4 +142,19 @@ func (apiHandler *ApiHandler) handleRetrieveTrx(w http.ResponseWriter, transacti
 	w.Header().Set("Content-Type", "application/json")
 
 	w.Write(jsonResponse)
+}
+
+func validateStoreTransactionRequest(storeTransactionRequest StoreTransactionRequest) bool {
+	transactionDate := storeTransactionRequest.TransactionDate
+	dateFormat := "2006-01-02" // YYYY-MM-DD
+	_, err := time.Parse(dateFormat, transactionDate)
+	if err != nil {
+		return false
+	}
+	amount := storeTransactionRequest.USDollarAmount
+	_, err = decimal.NewFromString(amount)
+	if err != nil {
+		return false
+	}
+	return true
 }
