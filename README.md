@@ -15,6 +15,9 @@ This project uses [decimal](https://github.com/shopspring/decimal) for doing mon
 4. This project is implemented using Go. If Go is not yet installed, please download and install from [here](https://golang.org/doc/install)
 5. Run command at root of repo : `go run main.go`
 
+## How to run unit test 
+`go test ./...`
+
 ## API
 There are 2 API's :
 1. Store transaction

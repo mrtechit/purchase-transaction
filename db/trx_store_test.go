@@ -1,10 +1,12 @@
 package db
 
 import (
+	"fmt"
 	"github.com/mrtechit/purchase-transaction/model"
 	"github.com/stretchr/testify/require"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"os"
 	"testing"
 )
 
@@ -101,7 +103,15 @@ func teardown(db *gorm.DB, transaction model.StoreTransaction) {
 }
 
 func conntectToPsgTestDB() (*gorm.DB, error) {
-	dsn := "user=postgres password=postgres dbname=postgres host=localhost port=5432 sslmode=disable"
+
+	host := os.Getenv("TEST_POSTGRES_HOST")
+	port := os.Getenv("TEST_POSTGRES_PORT")
+	user := os.Getenv("TEST_POSTGRES_USER")
+	password := os.Getenv("TEST_POSTGRES_PASSWORD")
+	dbname := os.Getenv("TEST_POSTGRES_DB")
+
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err

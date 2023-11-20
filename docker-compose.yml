@@ -24,6 +24,11 @@ services:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: mydb
+      TEST_POSTGRES_HOST: postgres
+      TEST_POSTGRES_PORT: 5432
+      TEST_POSTGRES_USER: myuser
+      TEST_POSTGRES_PASSWORD: mypassword
+      TEST_POSTGRES_DB: mydb
     networks:
       - trxapp
 
