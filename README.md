@@ -36,7 +36,7 @@ There are 2 API's :
 2. Retrieve transaction
    - **URL:** `/v1/api/transaction?transaction_id={transaction_id}&country={country}`
    - **Method:** `GET`
-   - **Request Body:**
+   - **Request Parameter:**
       - transaction_id (string)
       - country (string)
    - Example curl :
