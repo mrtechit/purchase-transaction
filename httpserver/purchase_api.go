@@ -34,6 +34,10 @@ type StoreTransactionResponse struct {
 	TransactionID string `json:"transaction_id"`
 }
 
+type ErrorResponse struct {
+	ErrorMessage string `json:"error"`
+}
+
 type ApiHandler struct {
 	Db TransactionManager
 }
@@ -55,12 +59,20 @@ func (apiHandler *ApiHandler) Handler() {
 			decoder := json.NewDecoder(r.Body)
 			err := decoder.Decode(&storeTransactionRequest)
 			if err != nil {
-				http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+				response := ErrorResponse{ErrorMessage: "Error decoding JSON"}
+				jsonResponse, _ := json.Marshal(response)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write(jsonResponse)
 				return
 			}
 			fmt.Println("Store request received", storeTransactionRequest)
 			if !validateStoreTransactionRequest(storeTransactionRequest) {
-				http.Error(w, "Invalid request", http.StatusBadRequest)
+				response := ErrorResponse{ErrorMessage: "Invalid request body"}
+				jsonResponse, _ := json.Marshal(response)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write(jsonResponse)
 				return
 			}
 			apiHandler.handleStoreTrx(w, storeTransactionRequest)
@@ -70,7 +82,11 @@ func (apiHandler *ApiHandler) Handler() {
 			country := r.URL.Query().Get("country")
 
 			if transactionID == "" || country == "" {
-				http.Error(w, "Missing request params", http.StatusBadRequest)
+				response := ErrorResponse{ErrorMessage: "Missing request params"}
+				jsonResponse, _ := json.Marshal(response)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write(jsonResponse)
 				return
 			}
 			fmt.Println("Retrieve request received for transactionID : ", transactionID)
@@ -99,7 +115,11 @@ func (apiHandler *ApiHandler) handleStoreTrx(w http.ResponseWriter, storeTransac
 
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
-		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
+		response := ErrorResponse{ErrorMessage: "Error encoding JSON"}
+		jsonResponse, _ = json.Marshal(response)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(jsonResponse)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -111,17 +131,29 @@ func (apiHandler *ApiHandler) handleRetrieveTrx(w http.ResponseWriter, transacti
 
 	trx, err := apiHandler.Db.RetrieveTrx(transactionID)
 	if err != nil {
-		http.Error(w, "Error fetching trx", http.StatusNotFound)
+		response := ErrorResponse{ErrorMessage: "Trx not found"}
+		jsonResponse, _ := json.Marshal(response)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(jsonResponse)
 		return
 	}
 	exchangeRate, err := currency.GetExchangeRate(country, trx.TransactionDate)
 	if err != nil {
-		http.Error(w, "Error fetching exchangeRate", http.StatusInternalServerError)
+		response := ErrorResponse{ErrorMessage: "Error fetching exchangeRate"}
+		jsonResponse, _ := json.Marshal(response)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(jsonResponse)
 		return
 	}
 	convertedAmount, err := currency.ConvertToUsDollarAndRoundOff(trx.USDollarAmount, exchangeRate)
 	if err != nil {
-		http.Error(w, "Error converting currency", http.StatusInternalServerError)
+		response := ErrorResponse{ErrorMessage: "Error converting currency"}
+		jsonResponse, _ := json.Marshal(response)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(jsonResponse)
 		return
 	}
 	response := RetrieveTransactionResponse{
@@ -135,10 +167,13 @@ func (apiHandler *ApiHandler) handleRetrieveTrx(w http.ResponseWriter, transacti
 
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
-		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
+		response := ErrorResponse{ErrorMessage: "Error encoding json"}
+		jsonResponse, _ = json.Marshal(response)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(jsonResponse)
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 
 	w.Write(jsonResponse)
