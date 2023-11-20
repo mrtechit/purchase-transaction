@@ -7,6 +7,7 @@ import (
 	"github.com/shopspring/decimal"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -38,7 +39,10 @@ func GetExchangeRate(country, date string) (string, error) {
 	sixMonthsAgo := parsedTime.AddDate(0, -6, 0)
 	formattedDate := sixMonthsAgo.Format(dateFormat)
 
-	TreasuryUrl := TreasuryUrl + formattedDate + countryEq + country + sortByDate
+	// Capitalize the first character
+	capitalizedCountryString := capitalizeFirst(country)
+
+	TreasuryUrl := TreasuryUrl + formattedDate + countryEq + capitalizedCountryString + sortByDate
 	response, err := http.Get(TreasuryUrl)
 	if err != nil {
 		fmt.Println("Error making GET request:", err)
@@ -82,4 +86,8 @@ func ConvertToUsDollarAndRoundOff(amount, exchangeRate string) (string, error) {
 	convertedAmount := amountPrecise.Mul(exchangeRatePrecise)
 	convertedAmountAndRounded := convertedAmount.Round(roundOffPlaces)
 	return convertedAmountAndRounded.String(), nil
+}
+
+func capitalizeFirst(s string) string {
+	return strings.ToUpper(s[:1]) + s[1:]
 }
