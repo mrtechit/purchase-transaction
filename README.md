@@ -27,6 +27,20 @@ There are 2 API's :
      - description (string)
      - transaction_date (string)
      - us_dollar_amount (string)
+   - **Response:**
+     - 200 OK - Success
+        ```json
+       {
+       "transaction_id": "253b647e-4ba7-4fe2-9305-66b04bb4afb4"
+       }
+        ```
+     - 500 Internal Server Error
+        ```json
+       {
+       "error": "internal error"
+       }
+        ```
+       Other standard HTTP response codes are also possible outcomes !
    - Example curl :
    `curl --location 'http://127.0.0.1:8080/v1/api/transaction' \
      --header 'Content-Type: application/json' \
@@ -42,6 +56,24 @@ There are 2 API's :
    - **Request Parameter:**
       - transaction_id (string)
       - country (string)
+   - **Response:**
+       - 200 OK - Success
+          ```json
+         {
+         "transaction_id": "253b647e-4ba7-4fe2-9305-66b04bb4afb4",
+         "transaction_date": "2022-10-12",
+         "us_dollar_amount": "1.86",
+         "exchange_rate": "83.071",
+         "converted_amount": "154.51"
+         }
+          ```
+       - 404 Not found
+          ```json
+         {
+         "error": "trx not found"
+         }
+          ```
+         Other standard HTTP response codes are also possible outcomes !
    - Example curl :
    `curl --location 'http://127.0.0.1:8080/v1/api/transaction?transaction_id=fd23d3b9-216f-4f2a-ab46-6e4192459721&country=Zimbabwe'`
 
