@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"github.com/mrtechit/purchase-transaction/model"
 	"gorm.io/gorm"
 )
@@ -27,6 +28,9 @@ func (db *DB) RetrieveTrx(transactionID string) (*model.StoreTransaction, error)
 	result := db.Db.Find(&storeTransaction)
 	if result.Error != nil {
 		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, errors.New("trx not found")
 	}
 	return &storeTransaction, nil
 }

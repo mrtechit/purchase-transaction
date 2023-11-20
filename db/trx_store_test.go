@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestStoreTrx(t *testing.T) {
+func TestStoreTrx_Success(t *testing.T) {
 	db, err := setup()
 	if err != nil {
 		t.Errorf("error connecting to DB")
@@ -27,7 +27,27 @@ func TestStoreTrx(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestRetrieveTrx(t *testing.T) {
+func TestStoreTrx_Failed_DuplicateKey(t *testing.T) {
+	db, err := setup()
+	if err != nil {
+		t.Errorf("error connecting to DB")
+	}
+	trx := &model.StoreTransaction{
+		TransactionID:   "7804a376-3688-4187-a7ba-992893cd4cmm",
+		Description:     "test",
+		TransactionDate: "10-11-2022",
+		USDollarAmount:  "1.54",
+	}
+	defer teardown(db, *trx)
+
+	newDB := NewDB(db)
+
+	err = newDB.StoreTrx(trx)
+	err = newDB.StoreTrx(trx)
+	require.Error(t, err)
+}
+
+func TestRetrieveTrx_Success(t *testing.T) {
 	db, err := setup()
 	if err != nil {
 		t.Errorf("error connecting to DB")
@@ -48,6 +68,24 @@ func TestRetrieveTrx(t *testing.T) {
 	trx, err := newDB.RetrieveTrx(trxStruct.TransactionID)
 	require.NoError(t, err)
 	require.Equal(t, "1.54", trx.USDollarAmount)
+}
+
+func TestRetrieveTrx_Failed_TrxNotFound(t *testing.T) {
+	db, err := setup()
+	if err != nil {
+		t.Errorf("error connecting to DB")
+	}
+	trxStruct := &model.StoreTransaction{
+		TransactionID:   "7804a376-3688-4187-a7ba-992893cddddd",
+		Description:     "test",
+		TransactionDate: "10-11-2022",
+		USDollarAmount:  "1.54",
+	}
+	defer teardown(db, *trxStruct)
+	newDB := NewDB(db)
+
+	_, err = newDB.RetrieveTrx(trxStruct.TransactionID)
+	require.Error(t, err)
 }
 
 func setup() (*gorm.DB, error) {
