@@ -13,6 +13,13 @@ func TestConvertToUsDollarSuccess(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestConvertToUsDollar_InvalidAmount_Failed(t *testing.T) {
+	amount := "0.009"
+	exchangeRate := ""
+	_, err := ConvertToUsDollarAndRoundOff(amount, exchangeRate)
+	require.Error(t, err)
+}
+
 func TestGetExchangeRateSuccess(t *testing.T) {
 	_, err := GetExchangeRate("Australia", "2023-10-12")
 	require.NoError(t, err)
