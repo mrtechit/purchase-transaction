@@ -24,14 +24,14 @@ There are 2 API's :
      - description (string)
      - transaction_date (string)
      - us_dollar_amount (string)
-     - Example curl :
-     - `curl --location 'http://127.0.0.1:8080/v1/api/transaction' \
-       --header 'Content-Type: application/json' \
-       --data '{
-       "description" : "transaction 4322",
-       "transaction_date" : "2023-10-12",
-       "us_dollar_amount" : "1.86"
-       }'`
+   - Example curl :
+   `curl --location 'http://127.0.0.1:8080/v1/api/transaction' \
+     --header 'Content-Type: application/json' \
+     --data '{
+     "description" : "transaction 4322",
+     "transaction_date" : "2023-10-12",
+     "us_dollar_amount" : "1.86"
+     }'`
 
 2. Retrieve transaction
    - **URL:** `/v1/api/transaction?transaction_id={transaction_id}&country={country}`
@@ -39,7 +39,7 @@ There are 2 API's :
    - **Request Body:**
       - transaction_id (string)
       - country (string)
-      - Example curl :
+   - Example curl :
    `curl --location 'http://127.0.0.1:8080/v1/api/transaction?transaction_id=fd23d3b9-216f-4f2a-ab46-6e4192459721&country=Zimbabwe'`
 
 Postman Collection can be found at root of project
